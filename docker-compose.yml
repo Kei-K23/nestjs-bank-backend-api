@@ -1,0 +1,15 @@
+services:
+  postgres:
+    container_name: nestjs-bank-backend-api
+    image: postgres
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: nestjs_bank_backend_api_db
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    restart: unless-stopped
+volumes:
+  postgres:
