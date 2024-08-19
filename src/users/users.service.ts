@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { UserEntity } from './user.entity';
-import { CreateUserDto } from './dto/user-create.dto';
+import { UserRequestDto } from './dto/user-request.dto';
 import * as argon2 from 'argon2';
 import { UserResponseDto } from './dto/user-response.dto';
 
@@ -23,12 +23,38 @@ export class UsersService {
     return this.mapToUserResponseDto(user);
   }
 
-  async create(createUserDto: CreateUserDto): Promise<UserResponseDto> {
+  async create(userRequestDto: UserRequestDto): Promise<UserResponseDto> {
     // Hash the user password
-    const hashedPassword = await argon2.hash(createUserDto.password);
-    createUserDto.password = hashedPassword;
+    const hashedPassword = await argon2.hash(userRequestDto.password);
+    userRequestDto.password = hashedPassword;
 
-    return this.mapToUserResponseDto(this.userRepository.create(createUserDto));
+    return this.mapToUserResponseDto(
+      await this.userRepository.save(userRequestDto),
+    );
+  }
+
+  async update(
+    id: string,
+    userRequestDto: UserRequestDto,
+  ): Promise<UserResponseDto> {
+    if (userRequestDto.password) {
+      userRequestDto.password = await argon2.hash(userRequestDto.password);
+    }
+    // Perform the update operation
+    await this.userRepository.update(id, userRequestDto);
+
+    // Retrieve the updated user
+    const updatedUser = await this.userRepository.findOne({ where: { id } });
+
+    if (!updatedUser) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    return this.mapToUserResponseDto(updatedUser);
+  }
+
+  async delete(id: string) {
+    await this.userRepository.delete(id);
   }
 
   private mapToUserResponseDto(userEntity: UserEntity): UserResponseDto {

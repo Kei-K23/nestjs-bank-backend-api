@@ -40,3 +40,4 @@ const dataSource = new DataSource(postgresDataSourceOptions);
   exports: [DataSource],
 })
 export class DatabaseModule {}
+export default dataSource;
