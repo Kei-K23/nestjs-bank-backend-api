@@ -15,6 +15,7 @@ import { UserRequestDto } from './dto/user-request.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles } from '../auth/role.decorator';
 import { RoleGuard } from '../auth/role.guard';
+import { GetUser } from '../auth/get-user.decorator';
 
 @Controller('users')
 export class UsersController {
@@ -28,6 +29,27 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get('me')
+  async getMe(@GetUser() user: any): Promise<UserResponseDto> {
+    return this.usersService.findById(user.userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('/me')
+  async updateMe(
+    @GetUser() user: any,
+    @Body() userRequestDto: UserRequestDto,
+  ): Promise<UserResponseDto> {
+    return this.usersService.update(user.userId, userRequestDto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('/me')
+  async deleteMe(@GetUser() user: any) {
+    this.usersService.delete(user.userId);
+  }
+
+  @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles('ADMIN')
   @Get(':id')
   async findById(@Param('id') id: string): Promise<UserResponseDto> {
