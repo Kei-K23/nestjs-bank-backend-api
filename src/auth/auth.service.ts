@@ -14,7 +14,8 @@ export class AuthService {
 
   async validateUser(email: string, pass: string): Promise<UserResponseDto> {
     const user = await this.usersService.findByEmail(email);
-    const passwordVerify = argon2.verify(user.password, pass);
+
+    const passwordVerify = await argon2.verify(user.password, pass);
     if (user && passwordVerify) {
       return this.usersService.mapToUserResponseDto(user);
     }
@@ -28,7 +29,12 @@ export class AuthService {
       throw new UnauthorizedException('User credential is not correct');
     }
 
-    const payload = { email: validatedUser.email, sub: validatedUser.id };
+    const payload = {
+      email: validatedUser.email,
+      sub: validatedUser.id,
+      role: validatedUser.role,
+    };
+
     return {
       access_token: this.jwtService.sign(payload),
     };
