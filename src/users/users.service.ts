@@ -8,6 +8,7 @@ import { UserResponseDto } from './dto/user-response.dto';
 @Injectable()
 export class UsersService {
   private userRepository: Repository<UserEntity>;
+
   constructor(private dataSource: DataSource) {
     this.userRepository = this.dataSource.getRepository(UserEntity);
   }
@@ -21,6 +22,11 @@ export class UsersService {
   async findById(id: string): Promise<UserResponseDto> {
     const [user] = await this.userRepository.findBy({ id });
     return this.mapToUserResponseDto(user);
+  }
+
+  async findByEmail(email: string): Promise<UserEntity> {
+    const [user] = await this.userRepository.findBy({ email });
+    return user;
   }
 
   async create(userRequestDto: UserRequestDto): Promise<UserResponseDto> {
@@ -57,7 +63,7 @@ export class UsersService {
     await this.userRepository.delete(id);
   }
 
-  private mapToUserResponseDto(userEntity: UserEntity): UserResponseDto {
+  mapToUserResponseDto(userEntity: UserEntity): UserResponseDto {
     const userResponseDto = new UserResponseDto(userEntity);
     return userResponseDto;
   }
