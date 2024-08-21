@@ -1,9 +1,11 @@
+import { AccountEntity } from '../account/account.entity';
 import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
 
 @Entity({ name: 'users' })
@@ -28,4 +30,9 @@ export class UserEntity {
 
   @Column({ type: 'varchar', length: 30, default: 'USERS' })
   role: string;
+
+  @OneToMany(() => AccountEntity, (account) => account.user, {
+    eager: true,
+  })
+  accounts: AccountEntity[];
 }

@@ -1,3 +1,4 @@
+import { AccountEntity } from '../../account/account.entity';
 import { UserEntity } from '../user.entity';
 
 export class UserResponseDto {
@@ -7,6 +8,7 @@ export class UserResponseDto {
   role: string;
   createdAt: Date;
   updatedAt: Date;
+  accounts: AccountEntity[];
   constructor(userEntity: UserEntity) {
     this.id = userEntity.id;
     this.name = userEntity.name;
@@ -14,5 +16,6 @@ export class UserResponseDto {
     this.role = userEntity.role;
     this.createdAt = userEntity.createdAt;
     this.updatedAt = userEntity.updatedAt;
+    this.accounts = userEntity.accounts;
   }
 }
