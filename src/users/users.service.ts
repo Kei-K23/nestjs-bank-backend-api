@@ -33,7 +33,6 @@ export class UsersService {
     // Hash the user password
     const hashedPassword = await argon2.hash(userRequestDto.password);
     userRequestDto.password = hashedPassword;
-    console.log(userRequestDto);
 
     return this.mapToUserResponseDto(
       await this.userRepository.save(userRequestDto),
