@@ -15,13 +15,13 @@ export class AccountService {
   }
 
   async findById(id: string): Promise<AccountEntity> {
-    const [user] = await this.accountRepository.findBy({ id });
-    return user;
+    const [account] = await this.accountRepository.findBy({ id });
+    return account;
   }
 
   async findByAccountId(accountId: string): Promise<AccountEntity> {
-    const [user] = await this.accountRepository.findBy({ accountId });
-    return user;
+    const [account] = await this.accountRepository.findBy({ accountId });
+    return account;
   }
 
   async create(accountRequestDto: AccountRequestDto): Promise<AccountEntity> {
@@ -36,13 +36,15 @@ export class AccountService {
     await this.accountRepository.update(id, accountRequestDto);
 
     // Retrieve the updated user
-    const updatedUser = await this.accountRepository.findOne({ where: { id } });
+    const updatedAccount = await this.accountRepository.findOne({
+      where: { id },
+    });
 
-    if (!updatedUser) {
+    if (!updatedAccount) {
       throw new NotFoundException(`Account with ID ${id} not found`);
     }
 
-    return updatedUser;
+    return updatedAccount;
   }
 
   async delete(id: string) {

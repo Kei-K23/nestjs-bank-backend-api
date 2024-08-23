@@ -32,6 +32,7 @@
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/typeorm": "^10.0.2",
+    "@paralleldrive/cuid2": "^2.2.2",
     "argon2": "^0.40.3",
     "class-validator": "^0.14.1",
     "passport": "^0.7.0",

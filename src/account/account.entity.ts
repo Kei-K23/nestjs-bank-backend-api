@@ -19,7 +19,7 @@ export class AccountEntity {
   @Column({ type: 'varchar', length: 255 })
   type: string;
 
-  @Column({ type: 'number', nullable: false })
+  @Column({ type: 'decimal', nullable: false })
   balance: number;
 
   @Column({ type: 'varchar', length: 255, default: 'PENDING' })
