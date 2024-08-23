@@ -5,7 +5,7 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  ManyToOne,
+  OneToOne,
 } from 'typeorm';
 
 @Entity({ name: 'accounts' })
@@ -25,7 +25,7 @@ export class AccountEntity {
   @Column({ type: 'varchar', length: 255, default: 'PENDING' })
   status: string;
 
-  @ManyToOne(() => UserEntity, (user) => user.accounts)
+  @OneToOne(() => UserEntity, (user) => user.account)
   user: UserEntity;
 
   @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })

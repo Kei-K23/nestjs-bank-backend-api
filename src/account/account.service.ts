@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { AccountEntity } from './account.entity';
 import { AccountRequestDto } from './dto/account-request.dto';
+import { createId } from '@paralleldrive/cuid2';
 
 @Injectable()
 export class AccountService {
@@ -25,7 +26,12 @@ export class AccountService {
   }
 
   async create(accountRequestDto: AccountRequestDto): Promise<AccountEntity> {
-    return await this.accountRepository.save(accountRequestDto);
+    return await this.accountRepository.save(
+      this.accountRepository.create({
+        accountId: createId(),
+        ...accountRequestDto,
+      }),
+    );
   }
 
   async update(

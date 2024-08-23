@@ -8,7 +8,7 @@ export class UserResponseDto {
   role: string;
   createdAt: Date;
   updatedAt: Date;
-  accounts: AccountEntity[];
+  account: AccountEntity;
   constructor(userEntity: UserEntity) {
     this.id = userEntity.id;
     this.name = userEntity.name;
@@ -16,6 +16,6 @@ export class UserResponseDto {
     this.role = userEntity.role;
     this.createdAt = userEntity.createdAt;
     this.updatedAt = userEntity.updatedAt;
-    this.accounts = userEntity.accounts;
+    this.account = userEntity.account;
   }
 }
