@@ -14,9 +14,15 @@ export class UsersService {
   }
 
   async findAll(): Promise<UserResponseDto[]> {
-    return (await this.userRepository.find()).map((user) =>
-      this.mapToUserResponseDto(user),
-    );
+    return (
+      await this.userRepository.find({
+        relations: {
+          account: true,
+        },
+      })
+    ).map((user) => {
+      return this.mapToUserResponseDto(user);
+    });
   }
 
   async findById(id: string): Promise<UserResponseDto> {
@@ -63,8 +69,19 @@ export class UsersService {
     await this.userRepository.delete(id);
   }
 
-  mapToUserResponseDto(userEntity: UserEntity): UserResponseDto {
-    const userResponseDto = new UserResponseDto(userEntity);
-    return userResponseDto;
+  mapToUserResponseDto(user: UserEntity): UserResponseDto {
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      account: user.account
+        ? {
+            ...user.account,
+          }
+        : null, // or provide a default value
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
   }
 }

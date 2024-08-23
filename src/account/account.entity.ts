@@ -6,6 +6,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToOne,
+  JoinColumn,
 } from 'typeorm';
 
 @Entity({ name: 'accounts' })
@@ -25,7 +26,11 @@ export class AccountEntity {
   @Column({ type: 'varchar', length: 255, default: 'PENDING' })
   status: string;
 
+  @Column({ type: 'boolean', default: false })
+  isSoftDeleted: boolean;
+
   @OneToOne(() => UserEntity, (user) => user.account)
+  @JoinColumn()
   user: UserEntity;
 
   @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
