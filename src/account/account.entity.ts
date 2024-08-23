@@ -27,6 +27,9 @@ export class AccountEntity {
   status: string;
 
   @Column({ type: 'boolean', default: false })
+  isLocked: boolean;
+
+  @Column({ type: 'boolean', default: false })
   isSoftDeleted: boolean;
 
   @OneToOne(() => UserEntity, (user) => user.account)
