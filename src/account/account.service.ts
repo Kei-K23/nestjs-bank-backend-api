@@ -4,16 +4,12 @@ import { AccountEntity } from './account.entity';
 import { AccountRequestDto } from './dto/account-request.dto';
 import { createId } from '@paralleldrive/cuid2';
 import { UserEntity } from '../users/user.entity';
-import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class AccountService {
   private accountRepository: Repository<AccountEntity>;
   private userRepository: Repository<UserEntity>;
-  constructor(
-    private dataSource: DataSource,
-    private userService: UsersService,
-  ) {
+  constructor(private dataSource: DataSource) {
     this.accountRepository = this.dataSource.getRepository(AccountEntity);
     this.userRepository = this.dataSource.getRepository(UserEntity);
   }
