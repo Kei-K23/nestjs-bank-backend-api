@@ -69,9 +69,15 @@ export class TransactionService {
         });
       }
 
+      const [updatedAccount] = await this.accountRepository.find({
+        where: {
+          id: account.id,
+        },
+      });
+
       const newTransaction = this.transactionRepository.create({
         type: transactionRequestDto.type,
-        account,
+        account: updatedAccount,
         amount: transactionRequestDto.amount,
       });
 
@@ -79,6 +85,126 @@ export class TransactionService {
     } else {
       throw new Error('Invalid transaction type');
     }
+  }
+
+  async transactionBetweenAccounts(
+    senderAccountId: string,
+    receiverAccountId: string,
+    amount: number,
+  ) {
+    if (!senderAccountId || !receiverAccountId) {
+      throw new Error('Missing account id');
+    }
+    if (!amount) {
+      throw new Error('Transfer amount is required');
+    }
+    const [senderAccount] = await this.accountRepository.find({
+      where: {
+        id: senderAccountId,
+      },
+    });
+    const [receiverAccount] = await this.accountRepository.find({
+      where: {
+        id: receiverAccountId,
+      },
+    });
+
+    if (!senderAccount) {
+      throw new Error(
+        'Cannot make transaction. Sender account does not exist.',
+      );
+    }
+
+    if (senderAccount.isSoftDeleted) {
+      throw new Error('Cannot make transaction. Sender account is deleted.');
+    }
+
+    if (senderAccount.status === AccountStatusType.PENDING) {
+      throw new Error(
+        'Cannot make transaction. Sender account is not activated.',
+      );
+    }
+
+    if (senderAccount.isLocked) {
+      throw new Error('Cannot make transaction. Sender account is locked.');
+    }
+
+    if (!receiverAccount) {
+      throw new Error(
+        'Cannot make transaction. Receiver account does not exist.',
+      );
+    }
+
+    if (receiverAccount.isSoftDeleted) {
+      throw new Error('Cannot make transaction. Receiver account is deleted.');
+    }
+
+    if (receiverAccount.status === AccountStatusType.PENDING) {
+      throw new Error(
+        'Cannot make transaction. Receiver account is not activated.',
+      );
+    }
+
+    if (receiverAccount.isLocked) {
+      throw new Error('Cannot make transaction. Receiver account is locked.');
+    }
+
+    if (senderAccount.balance <= amount) {
+      throw new Error('No enough balance to make send transaction');
+    }
+
+    await this.accountRepository.update(senderAccount.id, {
+      balance: +senderAccount.balance - +amount,
+    });
+    await this.accountRepository.update(receiverAccount.id, {
+      balance: +receiverAccount.balance + +amount,
+    });
+
+    const [updatedSenderAccount] = await this.accountRepository.find({
+      where: {
+        id: senderAccount.id,
+      },
+    });
+    const [updatedReceiverAccount] = await this.accountRepository.find({
+      where: {
+        id: receiverAccount.id,
+      },
+    });
+
+    const newTransactionSend = this.transactionRepository.create({
+      type: TransactionType.TRANSFER_SEND,
+      account: updatedSenderAccount,
+      amount: amount,
+    });
+
+    const newTransactionReceive = this.transactionRepository.create({
+      type: TransactionType.TRANSFER_RECEIVE,
+      account: updatedReceiverAccount,
+      amount: amount,
+    });
+
+    await this.transactionRepository.save([
+      newTransactionSend,
+      newTransactionReceive,
+    ]);
+
+    return {
+      message: 'Transaction between two accounts successful',
+    };
+  }
+
+  async getAllTransactionsByAccountId(
+    accountId: string,
+  ): Promise<AccountEntity> {
+    const [account] = await this.accountRepository.find({
+      where: {
+        id: accountId,
+      },
+      relations: {
+        transactions: true,
+      },
+    });
+    return account;
   }
 
   async update(
