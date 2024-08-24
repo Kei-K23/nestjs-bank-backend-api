@@ -1,3 +1,4 @@
+import { TransactionEntity } from '../transaction/transaction.entity';
 import { UserEntity } from '../users/user.entity';
 import {
   Entity,
@@ -7,6 +8,7 @@ import {
   UpdateDateColumn,
   OneToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 
 @Entity({ name: 'accounts' })
@@ -35,6 +37,9 @@ export class AccountEntity {
   @OneToOne(() => UserEntity, (user) => user.account)
   @JoinColumn()
   user: UserEntity;
+
+  @OneToMany(() => TransactionEntity, (transaction) => transaction.account)
+  transactions: TransactionEntity[];
 
   @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;

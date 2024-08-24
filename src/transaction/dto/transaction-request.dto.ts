@@ -10,8 +10,8 @@ export class TransactionRequestDto {
   @IsNumber()
   amount: number;
 
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   @MinLength(2)
   accountId: string;
 }

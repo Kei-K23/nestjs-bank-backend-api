@@ -5,8 +5,8 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  OneToOne,
   JoinColumn,
+  ManyToOne,
 } from 'typeorm';
 
 @Entity({ name: 'transactions' })
@@ -23,7 +23,7 @@ export class TransactionEntity {
   @Column({ type: 'varchar', length: 255, default: 'SUCCESS' })
   status: string;
 
-  @OneToOne(() => AccountEntity, (account) => account.id)
+  @ManyToOne(() => AccountEntity, (account) => account.transactions)
   @JoinColumn()
   account: AccountEntity;
 
